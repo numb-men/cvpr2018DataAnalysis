@@ -23,13 +23,13 @@ def useJavaCrawler():
     popen.wait(600) # 运行Java爬虫
     print ("运行Java爬虫脚本完成...")
 
-def useJavaWordCount(phraseWordCount):
+def useJavaWordCount(printWordNum, phraseWordNum):
     global has_compile_wordcount
     src = os.path.join(os.getcwd(), '"221600219&221600212"\\src\\')
     cwd = src.replace("\\", "/").replace('"', '')
     compile_cmd = "javac Main.java"
-    run_cmd = "java Main -i ../cvpr/result.txt -o output.txt -w 1 -n 5 -m "
-    run_cmd = run_cmd + str(phraseWordCount)
+    run_cmd = "java Main -i ../cvpr/result.txt -o output.txt -w 1 -n %d -m %d" % (
+        printWordNum, phraseWordNum)
     if not has_compile_wordcount:
         popen = subprocess.Popen(compile_cmd, shell=True, cwd=cwd)
         popen.wait(2) # 编译
@@ -52,20 +52,30 @@ class CvprAnalysis:
             res = re.search(r"<(.*)>", str.split(": ")[0])
             self.word_map[res.group(1)] = str.split(": ")[1]
 
-    def paintBar(self, phraseWordCount):
+    def paintBar(self, phraseWordNum):
         attr = list(self.word_map.keys())
         v1 = list(self.word_map.values())
-        bar = pyecharts.Bar("词组词数为%d时的词频统计"%phraseWordCount)
+        bar = pyecharts.Bar("词组词数为%d时的词频统计"%phraseWordNum)
         bar.add("词组", attr, v1, mark_line=["average"], mark_point=["max", "min"],
             is_stack=False, is_more_utils=True)
         # bar.print_echarts_options()
-        bar.render(path="cvpr2018DataAnalysis_%d.html"%phraseWordCount)
+        bar.render(path="cvpr2018DataAnalysis_%d.html"%phraseWordNum)
+
+    def paintWordColud(self, phraseWordNum):
+        name = list(self.word_map.keys())
+        value = list(self.word_map.values())
+        wordcloud = pyecharts.WordCloud("词组词数为%d时的词云图"%phraseWordNum, width=1300, height=620)
+        wordcloud.add("", name, value, word_size_range=[10, 100])
+        wordcloud.render(path="cvpr2018DataAnalysis_wordcolud%d.html"%phraseWordNum)
 
 if __name__ == '__main__':
     # useJavaCrawler()
     # 分析词组（包含1-5个单词）
-    for i in range(5):
-        useJavaWordCount(i+1)
-        analyzer = CvprAnalysis()
-        analyzer.paintBar(i+1)
+    # for i in range(5):
+    #     useJavaWordCount(5, i+1)
+    #     analyzer = CvprAnalysis()
+    #     analyzer.paintBar(5, i+1)
+    useJavaWordCount(500, 2)
+    analyzer = CvprAnalysis()
+    analyzer.paintWordColud(2)
 
