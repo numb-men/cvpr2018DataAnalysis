@@ -1,0 +1,8 @@
+characters: 613257
+words: 61735
+lines: 1506
+<boundary-aware face alignment algorithm>: 12
+<multi-task convolutional neural network>: 12
+<partially shared multi-task convolutional>: 12
+<shared multi-task convolutional neural>: 12
+<convolutional neural network with local>: 11
